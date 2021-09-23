@@ -40,16 +40,19 @@ public class TodoMain {
 
 			case "ls_name_asc":
 				l.sortByName();
+				System.out.println("List is now sorted in ascending order.");
 				isList = true;
 				break;
 
 			case "ls_name_desc":
 				l.sortByName();
+				System.out.println("List is now sorted in descending order.");
 				l.reverseList();
 				isList = true;
 				break;
 				
 			case "ls_date":
+				System.out.println("List is now sorted by date.");
 				l.sortByDate();
 				isList = true;
 				break;
