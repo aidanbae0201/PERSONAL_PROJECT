@@ -66,6 +66,21 @@ public class TodoMain {
 			case "help":
 				Menu.displaymenu();
 				break; 
+			case "find":
+				TodoUtil.findByWord(l,sc.next());
+				break;
+			case "ls_date_desc":
+				System.out.println("List is now sorted by date in descending order.");
+				l.sortByDate();
+				l.reverseList();
+				isList=true;
+				break;
+			case "find_cate":
+				TodoUtil.findCate(l,sc.next());
+				break;
+			case "ls_cate":
+				TodoUtil.lsCate(l);
+				break;
 			default:
 				System.out.println("Enter valid command (type \"help\" for list of commands");
 				break;
