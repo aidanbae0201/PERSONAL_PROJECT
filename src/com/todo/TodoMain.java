@@ -16,7 +16,6 @@ public class TodoMain {
 		l.importData("todolist.txt");
 		boolean isList = false;
 		boolean quit = false;
-		TodoUtil.loadList(l,"todolist.txt");
 		Menu.displaymenu();
 		do {
 			isList = false;

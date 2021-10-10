@@ -1,6 +1,7 @@
 package com.todo.dao;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
@@ -211,8 +212,10 @@ public class TodoList {
 			}
 			System.out.println(records + " records read!!");
 			br.close();
-		} catch (IOException | SQLException e) {
-			// TODO Auto-generated catch block
+		} catch (FileNotFoundException e) {
+			System.out.println(filename + " not found!");
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		
