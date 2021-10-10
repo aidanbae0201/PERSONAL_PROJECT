@@ -78,11 +78,9 @@ public class TodoMain {
 				break;
 			case "comp":
 				TodoUtil.completeItem(l,sc.nextInt());
-				// add method
 				break;
 			case "ls_comp":
 				TodoUtil.listAll(l, 1);
-				// add method
 				break;
 			default:
 				System.out.println("Enter valid command (type \"help\" for list of commands");
