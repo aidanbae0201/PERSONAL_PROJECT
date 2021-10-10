@@ -10,10 +10,36 @@ public class TodoItem {
     private Date current_date;
     private String category;
     private String due_date;
-    
+    private int id;
+    private int is_completed;
 
+    @Override
+	public String toString() {
+    	if(this.is_completed==1)
+    		return (id + ",{" + this.getCategory() + "} Title: " +
+    				"[" + this.getTitle() + "] " +
+    				"[V] " + 
+    				"Item Description: " + "[" + this.getDesc() + "] - " +
+    				this.getDue_date() + " - " +
+    				this.getString_date());
+    	else {
+    		return (id + ",{" + this.getCategory() + "} Title: " +
+    				"[" + this.getTitle() + "] " +
+    				"Item Description: " + "[" + this.getDesc() + "] - " +
+    				this.getDue_date() + " - " +
+    				this.getString_date());
+    	}
+	}
+    	
+	public int getId() {
+		return id;
+	}
 
-    public String getCategory() {
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getCategory() {
 		return category;
 	}
 
@@ -36,8 +62,18 @@ public class TodoItem {
         SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         this.string_date=format.format(current_date);
     }
-    
-    public TodoItem(String title, String desc, String category, String due_date) {
+
+
+	public TodoItem(String title, String desc, String category, String due_date, int is_completed) {
+		super();
+		this.title = title;
+		this.desc = desc;
+		this.category = category;
+		this.due_date = due_date;
+		this.is_completed = is_completed;
+	}
+
+	public TodoItem(String title, String desc, String category, String due_date) {
 		super();
 		this.title = title;
 		this.desc = desc;
@@ -75,8 +111,18 @@ public class TodoItem {
     public void setCurrent_date(Date current_date) {
         this.current_date = current_date;
     }
-    
-    public String toSaveString() {
-    	return title + "##" + desc + "##" + string_date + "\n";
+    public void setString_date(String date) {
+    	this.string_date = date;
     }
+    public String toSaveString() {
+    	return category + "##" + title + "##" + desc + "##" + due_date + "##" + string_date + "\n";
+    }
+
+	public int getIs_completed() {
+		return is_completed;
+	}
+
+	public void setIs_completed(int is_completed) {
+		this.is_completed = is_completed;
+	}
 }

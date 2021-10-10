@@ -13,6 +13,7 @@ import com.todo.dao.TodoList;
 
 public class TodoUtil {
 	
+	@SuppressWarnings("resource")
 	public static void createItem(TodoList list) {
 		
 		String title, desc,cate,due_date;
@@ -37,8 +38,8 @@ public class TodoUtil {
 		due_date = sc.nextLine();
 		
 		TodoItem t = new TodoItem(title, desc, cate, due_date);
-		list.addItem(t);
-		System.out.println("========== Item Added! ==========");
+		if(list.addItem(t)>0)
+			System.out.println("========== Item Added! ==========");
 	}
 
 	public static void deleteItem(TodoList l) {
@@ -49,21 +50,13 @@ public class TodoUtil {
 				+ "========== Delete Item Section ==========\n"
 				+ "enter the number of item to remove\n"
 				+ "\n");
-		
-//		String title = sc.next();
 		int no = sc.nextInt();
-		int iterator=0;
-		for (TodoItem item : l.getList()) {
-			iterator++;
-			if (no == iterator) {
-				l.deleteItem(item);
-				break;
-			}
-		}
-		System.out.println("========== Item Deleted! ==========");
+		if(l.deleteItem(no)>0)
+			System.out.println("========== Item Deleted! ==========");
 	}
 
 
+	@SuppressWarnings("resource")
 	public static void updateItem(TodoList l) {
 		
 		Scanner sc = new Scanner(System.in);
@@ -73,12 +66,6 @@ public class TodoUtil {
 				+ "enter the number of the item you want to update\n"
 				+ "\n");
 		int no = sc.nextInt();
-//		String title = sc.next().trim();
-//		if (!l.isDuplicate(title)) {
-//			System.out.println("title doesn't exist");
-//			return;
-//		}
-		
 		System.out.println("enter the new title of the item");
 		String new_title = sc.next().trim();
 		if (l.isDuplicate(new_title)) {
@@ -93,33 +80,18 @@ public class TodoUtil {
 		String new_cate = sc.nextLine();
 		System.out.println("enter the new due date :");
 		String new_due_date = sc.nextLine();
-		int iterator=0;
-		for (TodoItem item : l.getList()) {
-			iterator++;
-			if (no == iterator) {
-				l.deleteItem(item);
-				TodoItem t = new TodoItem(new_title, new_description,new_cate,new_due_date);
-				l.addItem(t);
-				System.out.println("========== Item updated! ==========");
-			}
-		}
+		
+		TodoItem t = new TodoItem(new_title,new_description,new_cate,new_due_date);
+		t.setId(no);
+		if(l.editItem(t)>0)
+			System.out.println("수정되었습니다.");
 	}
 
-	public static void listAll(TodoList l) {
-		int iterator=0;
+	public static void listAll(TodoList l,String orderby, int ordering) {
 		System.out.println("========== Item List ==========");
-		for (TodoItem item : l.getList()) {
-			System.out.println(iterator+1 + ".{" + item.getCategory() + "} Title: " + 
-							"[" + 
-							item.getTitle() + 
-							"]" + 
-							"  Item Description:  " +  
-							"[" + item.getDesc() + 
-							"] - " + 
-							item.getDue_date() + 
-							" - " +
-							item.getString_date());
-			iterator++;
+		System.out.println("Item total: " + l.getCount() + " items!");
+		for(TodoItem item : l.getOrderedList(orderby,ordering)) {
+			System.out.println(item.toString());
 		}
 	}
 	
@@ -155,97 +127,47 @@ public class TodoUtil {
 	}
 	
 	public static void findByWord(TodoList l, String name) {
-		int no=0;
-		for(TodoItem item : l.getList()) {
-			if(item.getTitle().contains(name)) {
-				System.out.println(no+1 + ".{" + item.getCategory() + "} Title: " + 
-						"[" + 
-						item.getTitle() + 
-						"]" + 
-						"  Item Description:  " +  
-						"[" + item.getDesc() + 
-						"] - " + 
-						item.getDue_date() + 
-						" - " +
-						item.getString_date());
-				no++;
-			}
-			else if(item.getCategory().contains(name)) {
-				System.out.println(no+1 + ".{" + item.getCategory() + "} Title: " + 
-						"[" + 
-						item.getTitle() + 
-						"]" + 
-						"  Item Description:  " +  
-						"[" + item.getDesc() + 
-						"] - " + 
-						item.getDue_date() + 
-						" - " +
-						item.getString_date());
-				no++;
-			}
-			else if(item.getDesc().contains(name)) {
-				System.out.println(no+1 + ".{" + item.getCategory() + "} Title: " + 
-						"[" + 
-						item.getTitle() + 
-						"]" + 
-						"  Item Description:  " +  
-						"[" + item.getDesc() + 
-						"] - " + 
-						item.getDue_date() + 
-						" - " +
-						item.getString_date());
-				no++;
-			}
+		int count=0;
+		for (TodoItem item : l.getList(name)) {
+			System.out.println(item);
+			count++;
 		}
-		System.out.println("Found a total of " + no + " items!");
+		System.out.println("Found a total of " + count + " items!");
 	}
 	public static void findCate(TodoList l, String cate) {
 		int no=0;
-		for(TodoItem item : l.getList()) {
-			if(item.getCategory().equals(cate)) {
-				System.out.println(no+1 + ".{" + item.getCategory() + "} Title: " + 
-						"[" + 
-						item.getTitle() + 
-						"]" + 
-						"  Item Description:  " +  
-						"[" + item.getDesc() + 
-						"] - " + 
-						item.getDue_date() + 
-						" - " +
-						item.getString_date());
-				no++;
-			}
+		for(TodoItem item : l.getListCategory(cate)) {
+			System.out.println(item);
+			no++;
 		}
 		System.out.println("Found a total of " + no + " items!");
 	}
 	
+	@SuppressWarnings("unused")
 	public static void lsCate(TodoList l) {
-		int no=0;
-		for(TodoItem item : l.getList()) {
-			no++;
-		}
 		int items=0;
-		String[] temp= new String[no];
-		int i=0;
-		for(TodoItem item : l.getList()) {
-			temp[i] = item.getCategory();
-			i++;
-		}
-		for(i=0;i<no;i++) {
-			if(temp[i]==null) continue;
-			for(int j=i+1;j<no;j++) {
-				if(temp[i].equals(temp[j])) temp[j]=null;
-			}
-
-			System.out.print("[" + temp[i] + "] ");
+		for(String item : l.getCategories()) {
+			System.out.print(item + " ");
 			items++;
 		}
 		System.out.println("\nFound a total of " + items + " items!");
-
-		
-		
 	}
-	
+	public static void completeItem(TodoList l, int no) {
+		for(TodoItem item : l.getList()) {
+			if(item.getId()==no)
+				item.setIs_completed(1);
+		}
+		if(l.completeItem(no)>0)
+			System.out.println("========== Item Completed! ==========");
+	}
+	public static void listAll(TodoList l, int no) {
+		int items=0;
+		for(TodoItem item : l.getList(no)) {
+			System.out.println(item);
+			items++;
+		}
+		System.out.println("\nFound a total of " + items + " items!");
+	}
 	
 	
 	
