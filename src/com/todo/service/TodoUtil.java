@@ -1,13 +1,19 @@
 package com.todo.service;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.todo.dao.TodoItem;
 import com.todo.dao.TodoList;
 
@@ -37,7 +43,10 @@ public class TodoUtil {
 		System.out.println("enter the due date :");
 		due_date = sc.nextLine();
 		
-		TodoItem t = new TodoItem(title, desc, cate, due_date);
+		System.out.println("Enter priority level 1~5 (1 is most important, 5 is least important) : ");
+		int priority = sc.nextInt();
+		
+		TodoItem t = new TodoItem(title, desc, cate, due_date,priority);
 		if(list.addItem(t)>0)
 			System.out.println("========== Item Added! ==========");
 	}
@@ -48,11 +57,19 @@ public class TodoUtil {
 		
 		System.out.println("\n"
 				+ "========== Delete Item Section ==========\n"
-				+ "enter the number of item to remove\n"
-				+ "\n");
-		int no = sc.nextInt();
-		if(l.deleteItem(no)>0)
+				+ "enter the number of item(s) to remove");
+		String line = sc.nextLine();
+		String[] no = line.split(" ");
+		int count=0;
+		for(String num:no) {
+			int number = Integer.parseInt(num);
+			if(l.deleteItem(number)>0)
+				count++;
+		}
+		if(count == no.length)
 			System.out.println("========== Item Deleted! ==========");
+		else
+			System.out.println("========== Deletion Failed! ==========");
 	}
 
 
@@ -63,8 +80,7 @@ public class TodoUtil {
 		
 		System.out.println("\n"
 				+ "========== Edit Item Section ==========\n"
-				+ "enter the number of the item you want to update\n"
-				+ "\n");
+				+ "enter the number of the item you want to update");
 		int no = sc.nextInt();
 		System.out.println("enter the new title of the item");
 		String new_title = sc.next().trim();
@@ -76,12 +92,13 @@ public class TodoUtil {
 		sc.nextLine();
 		System.out.println("enter the new description : ");
 		String new_description = sc.nextLine().trim();
-		System.out.println("enter the new category :");
+		System.out.println("enter the new category : ");
 		String new_cate = sc.nextLine();
-		System.out.println("enter the new due date :");
+		System.out.println("enter the new due date : ");
 		String new_due_date = sc.nextLine();
-		
-		TodoItem t = new TodoItem(new_title,new_description,new_cate,new_due_date);
+		System.out.println("enter the new priority level : ");
+		int priority = sc.nextInt();
+		TodoItem t = new TodoItem(new_title,new_description,new_cate,new_due_date,priority);
 		t.setId(no);
 		if(l.editItem(t)>0)
 			System.out.println("수정되었습니다.");
@@ -152,14 +169,26 @@ public class TodoUtil {
 		}
 		System.out.println("\nFound a total of " + items + " items!");
 	}
-	public static void completeItem(TodoList l, int no) {
-		for(TodoItem item : l.getList()) {
-			if(item.getId()==no)
-				item.setIs_completed(1);
+	public static void completeItem(TodoList l) {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Enter the number of item(s) to complete");
+		String line = sc.nextLine();
+		String[] no = line.split(" ");
+		int count=0;
+		for(String num:no) {
+			int number = Integer.parseInt(num);
+			for(TodoItem item: l.getList())
+				if(item.getId()==number)
+					item.setIs_completed(1);
+			if(l.completeItem(number)>0)
+				count++;
 		}
-		if(l.completeItem(no)>0)
+		if(count == no.length)
 			System.out.println("========== Item Completed! ==========");
+		else
+			System.out.println("========== Completion Failed! ==========");
 	}
+
 	public static void listAll(TodoList l, int no) {
 		int items=0;
 		for(TodoItem item : l.getList(no)) {
@@ -167,6 +196,60 @@ public class TodoUtil {
 			items++;
 		}
 		System.out.println("\nFound a total of " + items + " items!");
+	}
+	public static void toJson(TodoList l) {
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		List<TodoItem> list = new ArrayList<TodoItem>();
+		for(TodoItem item: l.getList()) {
+			list.add(item);
+		}
+		String jsonstr = gson.toJson(list);
+		try {
+			FileWriter writer = new FileWriter("data2.txt");
+			writer.write(jsonstr);
+			writer.close();
+			System.out.println("Saved in file!");
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static void fromJson(TodoList l) {
+		Gson gson = new Gson();
+		String jsonstr=null;
+		try {
+			BufferedReader br = new BufferedReader(new FileReader("data2.txt"));
+			jsonstr = br.readLine();
+			br.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Data read succesfully from file!");
+		TodoItem[] array = gson.fromJson(jsonstr,TodoItem[].class);
+		List<TodoItem> list = Arrays.asList(array);
+		
+	}
+	
+	public static void progressItem(TodoList l) {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Enter the number of item(s) to mark as in progress");
+		String line = sc.nextLine();
+		String[] no = line.split(" ");
+		int count=0;
+		for(String num: no) {
+			int number = Integer.parseInt(num);
+			for(TodoItem item: l.getList())
+				if(item.getId() == number)
+					item.setIn_progress(1);
+			if(l.progressItem(number)>0)
+				count++;
+		}
+		if(count == no.length)
+			System.out.println("========== In progress set! ==========");
+		else
+			System.out.println("========== In progress failed! ==========");
 	}
 	
 	

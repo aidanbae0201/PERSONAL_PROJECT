@@ -13,12 +13,10 @@ public class TodoMain {
 		Scanner sc = new Scanner(System.in);
 		TodoList l = new TodoList();
 		l.connectSQL();
-		l.importData("todolist.txt");
-		boolean isList = false;
+		//l.importData("todolist.txt");
 		boolean quit = false;
 		Menu.displaymenu();
 		do {
-			isList = false;
 			Menu.prompt();
 			String choice = sc.next();
 			switch (choice) {
@@ -77,11 +75,23 @@ public class TodoMain {
 				TodoUtil.lsCate(l);
 				break;
 			case "comp":
-				TodoUtil.completeItem(l,sc.nextInt());
+				TodoUtil.completeItem(l);
 				break;
 			case "ls_comp":
 				TodoUtil.listAll(l, 1);
 				break;
+			case "ls_prior":
+				TodoUtil.listAll(l, "priority", 1);
+				break;
+			case "progress":
+				TodoUtil.progressItem(l);
+				break;
+			case "to_json":
+				TodoUtil.toJson(l);
+				break;
+//			case "import_json":
+//				
+//				break;
 			default:
 				System.out.println("Enter valid command (type \"help\" for list of commands");
 				break;
